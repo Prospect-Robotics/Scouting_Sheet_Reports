@@ -8,8 +8,11 @@ pitsheet = workbook.sheet_by_name('PIT SCOUTING')
 #ourRows = input("Enter the number of filled rows in the spreadsheet: ")
 numberOfRowsMatch = input("Enter the number of filled rows in Match sheet: ")
 numberOfRowsPit = input("Enter the number of filled rows in Pit sheet: ")
-allRowTeamNumbers = []
+allMatchRowTeamNumbers = []
+allMatchRowData = []
 allTeams = []
+matchColumns = ['Match Number','Alliance Color','Robot Starting Position','Autonomous Performance','Autonomous Notes','Switch Cube Delivery','Scale Cube Delivery','Exchange Cube Delivery','Maneuverability','Driver Skill','Teleoperation Notes','Endgame','Endgame Notes','Inherent Robot Ability','Did Well','Vulnerabilities']
+pitColumns = ['Team Name', 'Drive Train Type', 'Wheel Type', 'Number of Wheels', 'Robot Speed', 'Robot Weight', 'Has Auto?', 'No Auto', 'Switch Auto', 'Scale Auto', 'Auto Line', '# Switch Auto', '# Scale Auto', 'Auto Comments', '# Switch Teleop', '# Scale Teleop', '# Exchange Teleop', 'Climb?', 'Support Other?', 'Teleop Comments']
 def is_int(theInt):
     try:
         int(theInt)
@@ -26,18 +29,18 @@ for row in range(1, numberOfRowsMatch):
     if in_sheet(row, 3, matchsheet) == False:
         break
     else:
-        print row, allRowTeamNumbers
-        allRowTeamNumbers.append(str(int((matchsheet.cell(row, 3).value))))
+        print row, allMatchRowTeamNumbers
+        allMatchRowTeamNumbers.append(str(int((matchsheet.cell(row, 3).value))))
 for row in range(1, numberOfRowsPit):
     if in_sheet(row, 2, pitsheet) == False:
         break
     else:
-        print row, allRowTeamNumbers
-        allRowTeamNumbers.append(str(int((pitsheet.cell(row, 2).value))))
-for row in range(0, len(allRowTeamNumbers)):
-    if allRowTeamNumbers[row] not in allTeams:
-        allTeams.append(allRowTeamNumbers[row])
-print allRowTeamNumbers
+        print row, allMatchRowTeamNumbers
+        allMatchRowTeamNumbers.append(str(int((pitsheet.cell(row, 2).value))))
+for row in range(0, len(allMatchRowTeamNumbers)):
+    if allMatchRowTeamNumbers[row] not in allTeams:
+        allTeams.append(allMatchRowTeamNumbers[row])
+print allMatchRowTeamNumbers
 print allTeams
 newBook = xlwt.Workbook()
 for team in allTeams:
@@ -51,22 +54,8 @@ for team in allTeams:
 
     #MATCH SCOUTING REPORT
     teamReportSheet.write(0,0,'Robot Report for Team '+team)
-    teamReportSheet.write(1,0,'Match Number')
-    teamReportSheet.write(1,1,'Alliance Color')#'Blue' or 'Red'
-    teamReportSheet.write(1,2,'Robot Starting Position')#[11:-1] is 'Left' or 'Center' or 'Right'
-    teamReportSheet.write(1,3,'Autonomous Performance')#[0] is 1, 2, 3, or 4
-    teamReportSheet.write(1,4,'Autonomous Notes')#Long answer
-    teamReportSheet.write(1,5,'Switch Cube Delivery')#[0] is 1, 2, 3, or 4
-    teamReportSheet.write(1,6,'Scale Cube Delivery')#[0] is 1, 2, 3, or 4
-    teamReportSheet.write(1,7,'Exchange Cube Delivery')#[0] is 1, 2, 3, or 4
-    teamReportSheet.write(1,8,'Maneuverability')#[0] is 1, 2, 3, or 4
-    teamReportSheet.write(1,9,'Driver Skill')#[0] is 1, 2, 3, or 4
-    teamReportSheet.write(1,10,'Teleoperation Notes')#Long answer
-    teamReportSheet.write(1,11,'Endgame')#[0] is 1, 2, 3, or 4
-    teamReportSheet.write(1,12,'Endgame Notes')#Long answer
-    teamReportSheet.write(1,13,'Inherent Robot Ability')#[0] is 1, 2, 3, or 4
-    teamReportSheet.write(1,14,'Did Well')#Long answer
-    teamReportSheet.write(1,15,'Vulnerabilities')#Long answer
+    for col in matchColumns:
+        teamReportSheet.write(1,matchColumns.index(col),col)
     rowNumber = 1
     for row in range(1, numberOfRowsMatch):
         if in_sheet(row, 3, matchsheet) == False:
@@ -88,26 +77,8 @@ for team in allTeams:
 
     #PIT SCOUTING REPORT
     rowNumber += 2
-    teamReportSheet.write(rowNumber, 0, 'Team Name')
-    teamReportSheet.write(rowNumber, 1, 'Drive Train Type')
-    teamReportSheet.write(rowNumber, 2, 'Wheel Type')
-    teamReportSheet.write(rowNumber, 3, 'Number of Wheels')
-    teamReportSheet.write(rowNumber, 4, 'Robot Speed')
-    teamReportSheet.write(rowNumber, 5, 'Robot Weight')
-    teamReportSheet.write(rowNumber, 6, 'Has Auto?')
-    teamReportSheet.write(rowNumber, 7, 'No Auto')
-    teamReportSheet.write(rowNumber, 8, 'Switch Auto')
-    teamReportSheet.write(rowNumber, 9, 'Scale Auto')
-    teamReportSheet.write(rowNumber, 10, 'Auto Line')
-    teamReportSheet.write(rowNumber, 11, '# Switch Auto')
-    teamReportSheet.write(rowNumber, 12, '# Scale Auto')
-    teamReportSheet.write(rowNumber, 13, 'Auto Comments')
-    teamReportSheet.write(rowNumber, 14, '# Switch Teleop')
-    teamReportSheet.write(rowNumber, 15, '# Scale Teleop')
-    teamReportSheet.write(rowNumber, 16, '# Exchange Teleop')
-    teamReportSheet.write(rowNumber, 17, 'Climb?')
-    teamReportSheet.write(rowNumber, 18, 'Support Other?')
-    teamReportSheet.write(rowNumber, 19, 'Teleop Comments')
+    for col in pitColumns:
+        teamReportSheet.write(rowNumber,pitColumns.index(col),col)
     
     for row in range(1, numberOfRowsPit):
         if in_sheet(row, 2, pitsheet) == False:
@@ -122,6 +93,19 @@ for team in allTeams:
                 colNumber += 1
                 print pitsheet.cell(row, pit).value
                 teamReportSheet.write(rowNumber, colNumber, int(str(pitsheet.cell(row, pit).value)[0]) if str(pitsheet.cell(row, pit).value) != "" and is_int(str(pitsheet.cell(row, pit).value)[0]) and is_int(str(pitsheet.cell(row, pit).value)[1]) == False else str(pitsheet.cell(row, pit).value))
+bestSheet = newBook.add_sheet("Team Rankings")
+
+#Best Overall
+bestSheet.write(0, 0, "BEST OVERALL")
+bestSheet.write(1, 0, "OUR RANK")
+bestSheet.write(1, 1, "Team Number")
+bestSheet.write(1, 2, "Inherent Robot Ability (Match avg)")
+bestSheet.write(1, 3, "Maneuverability (Match avg)")
+bestSheet.write(1, 4, "Driver Skill")
+bestSheet.write(1, 5, "Endgame")
+bestSheet.write(1, 6, "Teleoperation Notes")
+bestSheet.write(1, 7, "Did Well")
+bestSheet.write(1, 8, "Vulnerabilities")
 
 #THIS MUST BE LAST
 fileErrorNumber = 1
